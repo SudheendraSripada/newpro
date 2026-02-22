@@ -187,22 +187,33 @@ body {
 
 @media (max-width: 640px) {
   .input-row {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: column !important;
+    align-items: stretch !important;
     background: var(--input-bg);
-    padding: 1rem;
+    padding: 1.25rem !important;
     border-radius: 12px;
     border: 1px solid var(--border-color);
   }
 
-  .input-row>* {
+  .input-row>*,
+  .input-row div[style*="flex"] {
     width: 100% !important;
     flex: none !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .input-row input,
+  .input-row select,
+  .input-row button {
+    width: 100% !important;
+    margin: 0 !important;
   }
 
   .input-row button {
     align-self: flex-end;
     width: auto !important;
+    padding: 0.5rem 1rem !important;
   }
 }
 
