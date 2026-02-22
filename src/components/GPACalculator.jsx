@@ -59,7 +59,7 @@ const GPACalculator = () => {
                 <div className="input-group">
                     <label>Academic Subjects (CBCS Scheme)</label>
                     {gpaSubjects.map((sub, idx) => (
-                        <div key={idx} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                        <div key={idx} className="input-row">
                             <input
                                 type="text"
                                 className="input-field"

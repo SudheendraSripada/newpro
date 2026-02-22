@@ -112,14 +112,12 @@ const AttendanceTracker = () => {
                             const isBelowThreshold = parseFloat(percentage) < 75;
 
                             return (
-                                <div key={idx} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', alignItems: 'center', backgroundColor: 'var(--input-bg)', padding: '0.75rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                                <div key={idx} className="input-row" style={{ backgroundColor: 'var(--input-bg)', padding: '0.75rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                                     <div style={{ flex: 2 }}>
                                         <input type="text" className="input-field" value={record.subject} onChange={(e) => handleUpdateAttendance(idx, 'subject', e.target.value)} />
                                     </div>
-                                    <div style={{ flex: 1 }}>
+                                    <div style={{ flex: 1, display: 'flex', gap: '0.5rem' }}>
                                         <input type="number" className="input-field" placeholder="Att" value={record.attended} onChange={(e) => handleUpdateAttendance(idx, 'attended', e.target.value)} />
-                                    </div>
-                                    <div style={{ flex: 1 }}>
                                         <input type="number" className="input-field" placeholder="Total" value={record.total} onChange={(e) => handleUpdateAttendance(idx, 'total', e.target.value)} />
                                     </div>
                                     <div style={{ width: '60px', textAlign: 'center', fontSize: '1rem', fontWeight: '700', color: isBelowThreshold && total > 0 ? 'var(--warning)' : 'var(--success)' }}>

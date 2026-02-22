@@ -31,3 +31,64 @@ Below is the browser subagent's video recording demonstrating the updated verifi
 ![Updated Logic Flow](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/study_planner_grid_layout_1771758294681.webp)
 
 ![Click Feedback](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/.system_generated/click_feedback/click_feedback_1771758355298.png)
+
+## Validation and Persistence
+The application now safeguards against invalid plans and saves inputs for returning users via `localStorage`.
+
+*   **Error Prevention**: If the user provides empty subjects, a past-due EXAM Date, or study hours zero or below, the UI surfaces a clean, soft-red warning banner preventing generation.
+*   **Persistent Forms**: Upon entering data, inputs are synced to browser `localStorage`. When revisiting the planner, form values are pre-filled automatically.
+*   **Agent Validation**: The browser subagent confirmed failure state triggers and successfully performed a full browser reload, verifying persistent form inputs.
+
+Below is the browser subagent's video recording demonstrating validation constraints and reload persistence in action:
+
+![Validation & Persistence Test](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/study_planner_validation_1771758560427.webp)
+
+## V3: Dashboard Navigation & Analytics
+The app has undergone a major UX layout shift from a single page configuration to a full Dashboard design with Sidebar navigation.
+
+*   **Difficulty-Weighted Scheduling**: Subjects are added as individual rows, allowing users to define difficulty weights (Easy/Medium/Hard). Hard subjects are allocated three times the amount of days as Easy subjects, improving study priority management.
+*   **Progress Tracking**: Users can mark generated days as "Completed" via checkboxes. Total study compliance is shown as a percentage bar in the Progress tab.
+*   **Analytics Engine**: An analytics tab combs through historical study data from `localStorage` to compute a completion rate. If a user drops below 50% for a scheduled subject, a dynamic "Weak Subject Warning" is displayed to encourage corrective action.
+
+![Analytics Layout Verification](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/.system_generated/click_feedback/click_feedback_1771761310600.png)
+
+Below is the browser recording verifying the full V3 feature suite:
+
+![Dashboard and Analytics V3 Recording](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/dashboard_v3_validation_1771760359332.webp)
+
+## V4: GPA Calculator & Theme Customization
+The latest update introduces academic utility and personalization features.
+
+*   **GPA Calculator**: A dedicated tab for tracking semester performance. It supports dynamic subject entries with credit mappings and grade points (A=10, B=8, C=6, D=4, F=0).
+*   **Persistent Dark Mode**: A sleek Dark Theme toggle has been added to the sidebar. The preference is stored in `localStorage`, along with all GPA data, ensuring your academic records are always ready.
+
+![Dark Mode & GPA Sidebar](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/.system_generated/click_feedback/click_feedback_1771762004153.png)
+
+Below is the browser recording verifying the GPA logic and Theme toggle:
+
+![GPA and Theme V4 Recording](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/gpa_theme_validation_1771761743358.webp)
+
+## V5: Attendance Tracker (RVR & JC Regulations)
+The latest update adds a specialized tracker for classroom attendance, following RVR & JC College of Engineering standards.
+
+*   **Semester-Wise Subjects**: Select your semester to automatically load the RVR & JC curriculum subjects (Sem 1 to Sem 8).
+*   **75% Threshold Warning**: The app calculates your attendance percentage in real-time. If it falls below the mandatory 75%, a red "LOW" warning is displayed.
+*   **Total Persistence**: Like the GPA and Planner, your attendance logs are saved locally for every semester.
+
+![Attendance Tracker View](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/attendance_tracker_records_1771763029784.png)
+
+Below is the browser recording verifying the full Attendance Tracker suite:
+
+![Attendance Tracker V5 Recording](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/attendance_v5_validation_demo_1771762378923.webp)
+
+## V6: Component Refactor & Dashboard Overview
+The application has been modularized for professional scale, and all academic logic now aligns with **RVR & JC College of Engineering Regulations (R20/R24)**.
+
+*   **Aggregate Attendance**: Calculated as `Total Attended / Total Conducted` across all subjects, ensuring the dashboard reflects your true college standing (mandatory 75% aggregate).
+*   **10-Point GPA Scale**: Fully updated mapping for O (10), A+ (9), A (8), B+ (7), B (6), C (5), and F (0).
+*   **Modular Architecture**: Logic for GPA and Attendance is isolated within standalone components for better maintainability.
+*   **UI Polish**: Upgraded to Inter/Outfit typography with modern card layouts and subtle hover animations.
+
+Below is the browser recording verifying the regulation-compliant calculations:
+
+![V6 Regulation Alignment Recording](/home/sudheendra/.gemini/antigravity/brain/184136d7-5a09-4648-92bf-6d4eff22a34a/regulation_check_recording_1771764414272.webp)

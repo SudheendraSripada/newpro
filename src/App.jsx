@@ -10,6 +10,8 @@ function App() {
     return localStorage.getItem('study_theme') === 'dark'
   })
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
   // Planner State (Keep in App for Analytics/Progress interaction)
   const [subjects, setSubjects] = useState(() => {
     const saved = localStorage.getItem('study_subjects_v3')
@@ -129,46 +131,50 @@ function App() {
   };
 
   const renderSidebar = () => (
-    <div className="sidebar">
-      <div className="sidebar-logo">
-        <span style={{ fontSize: '1.5rem' }}>✨</span> Study Board
-      </div>
-      <div className="sidebar-nav">
-        <div className={`nav-item ${currentTab === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentTab('dashboard')}>
-          🏠 Dashboard
+    <>
+      <div className={`mobile-backdrop ${isSidebarOpen ? 'active' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-logo">
+          <span style={{ fontSize: '1.5rem' }}>✨</span> Study Board
+          <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)}>×</button>
         </div>
-        <div className={`nav-item ${currentTab === 'planner' ? 'active' : ''}`} onClick={() => setCurrentTab('planner')}>
-          📅 Planner
+        <div className="sidebar-nav">
+          <div className={`nav-item ${currentTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setCurrentTab('dashboard'); setIsSidebarOpen(false); }}>
+            🏠 Dashboard
+          </div>
+          <div className={`nav-item ${currentTab === 'planner' ? 'active' : ''}`} onClick={() => { setCurrentTab('planner'); setIsSidebarOpen(false); }}>
+            📅 Planner
+          </div>
+          <div className={`nav-item ${currentTab === 'progress' ? 'active' : ''}`} onClick={() => { setCurrentTab('progress'); setIsSidebarOpen(false); }}>
+            ✅ Progress
+          </div>
+          <div className={`nav-item ${currentTab === 'analytics' ? 'active' : ''}`} onClick={() => { setCurrentTab('analytics'); setIsSidebarOpen(false); }}>
+            📊 Analytics
+          </div>
+          <div className={`nav-item ${currentTab === 'attendance' ? 'active' : ''}`} onClick={() => { setCurrentTab('attendance'); setIsSidebarOpen(false); }}>
+            📝 Attendance
+          </div>
+          <div className={`nav-item ${currentTab === 'gpa' ? 'active' : ''}`} onClick={() => { setCurrentTab('gpa'); setIsSidebarOpen(false); }}>
+            🎓 GPA Calculator
+          </div>
         </div>
-        <div className={`nav-item ${currentTab === 'progress' ? 'active' : ''}`} onClick={() => setCurrentTab('progress')}>
-          ✅ Progress
-        </div>
-        <div className={`nav-item ${currentTab === 'analytics' ? 'active' : ''}`} onClick={() => setCurrentTab('analytics')}>
-          📊 Analytics
-        </div>
-        <div className={`nav-item ${currentTab === 'attendance' ? 'active' : ''}`} onClick={() => setCurrentTab('attendance')}>
-          📝 Attendance
-        </div>
-        <div className={`nav-item ${currentTab === 'gpa' ? 'active' : ''}`} onClick={() => setCurrentTab('gpa')}>
-          🎓 GPA Calculator
-        </div>
-      </div>
 
-      <div
-        className="nav-item"
-        style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'var(--input-bg)', border: '1px solid var(--border-color)', marginBottom: '1rem' }}
-        onClick={() => setIsDarkMode(!isDarkMode)}
-      >
-        <span style={{ fontSize: '0.9rem' }}>{isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}</span>
-        <div style={{ width: '32px', height: '18px', backgroundColor: isDarkMode ? 'var(--accent-color)' : '#cbd5e1', borderRadius: '10px', position: 'relative' }}>
-          <div style={{ width: '14px', height: '14px', backgroundColor: 'white', borderRadius: '50%', position: 'absolute', top: '2px', left: isDarkMode ? '16px' : '2px', transition: 'left 0.2s' }}></div>
+        <div
+          className="nav-item theme-item"
+          style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'var(--input-bg)', border: '1px solid var(--border-color)', marginBottom: '1rem' }}
+          onClick={() => setIsDarkMode(!isDarkMode)}
+        >
+          <span style={{ fontSize: '0.9rem' }}>{isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}</span>
+          <div style={{ width: '32px', height: '18px', backgroundColor: isDarkMode ? 'var(--accent-color)' : '#cbd5e1', borderRadius: '10px', position: 'relative' }}>
+            <div style={{ width: '14px', height: '14px', backgroundColor: 'white', borderRadius: '50%', position: 'absolute', top: '2px', left: isDarkMode ? '16px' : '2px', transition: 'left 0.2s' }}></div>
+          </div>
+        </div>
+
+        <div className="sidebar-footer" style={{ padding: '0', fontSize: '0.75rem', opacity: 0.7 }}>
+          Built by Sudheendra Sripada<br />Engineering Study Planner
         </div>
       </div>
-
-      <div className="app-footer" style={{ padding: '0', fontSize: '0.75rem', opacity: 0.7 }}>
-        Built by Sudheendra Sripada<br />Engineering Study Planner
-      </div>
-    </div>
+    </>
   );
 
   const renderPlanner = () => (
@@ -263,6 +269,7 @@ function App() {
 
   return (
     <div className={`dashboard-layout ${isDarkMode ? 'dark-theme' : ''}`}>
+      <button className="mobile-hamburger" onClick={() => setIsSidebarOpen(true)}>☰</button>
       {renderSidebar()}
       <main className="main-content">
         {currentTab === 'dashboard' && <DashboardOverview stats={getDashboardStats()} />}
