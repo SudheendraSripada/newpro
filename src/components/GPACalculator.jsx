@@ -6,7 +6,7 @@ const GPACalculator = () => {
     const [gpaSubjects, setGpaSubjects] = useState(() => {
         const saved = localStorage.getItem('study_gpa_v4');
         if (saved) return JSON.parse(saved);
-        return [{ name: '', credits: '', grade: 'O' }];
+        return [{ name: '', credits: '', grade: 'A+' }];
     });
 
     const [branchConfig, setBranchConfig] = useState({
@@ -30,20 +30,20 @@ const GPACalculator = () => {
             let others = [];
 
             if (branchNames) {
-                subs = branchCredits[0].map((cr, i) => ({ name: branchNames[0][i] || `Subject ${i + 1}`, credits: cr, grade: 'O' }));
+                subs = branchCredits[0].map((cr, i) => ({ name: branchNames[0][i] || `Subject ${i + 1}`, credits: cr, grade: 'A+' }));
                 if (branchCredits.length > 1) {
-                    labs = branchCredits[1].map((cr, i) => ({ name: branchNames[1]?.[i] || `Lab ${i + 1}`, credits: cr, grade: 'O' }));
+                    labs = branchCredits[1].map((cr, i) => ({ name: branchNames[1]?.[i] || `Lab ${i + 1}`, credits: cr, grade: 'A+' }));
                 }
                 if (branchCredits.length > 2) {
-                    others = branchCredits[2].map((cr, i) => ({ name: branchNames[2]?.[i] || `Other ${i + 1}`, credits: cr, grade: 'O' }));
+                    others = branchCredits[2].map((cr, i) => ({ name: branchNames[2]?.[i] || `Other ${i + 1}`, credits: cr, grade: 'A+' }));
                 }
             } else {
-                subs = branchCredits[0].map((cr, i) => ({ name: `Subject ${i + 1}`, credits: cr, grade: 'O' }));
+                subs = branchCredits[0].map((cr, i) => ({ name: `Subject ${i + 1}`, credits: cr, grade: 'A+' }));
                 if (branchCredits.length > 1) {
-                    labs = branchCredits[1].map((cr, i) => ({ name: `Lab ${i + 1}`, credits: cr, grade: 'O' }));
+                    labs = branchCredits[1].map((cr, i) => ({ name: `Lab ${i + 1}`, credits: cr, grade: 'A+' }));
                 }
                 if (branchCredits.length > 2) {
-                    others = branchCredits[2].map((cr, i) => ({ name: `Other ${i + 1}`, credits: cr, grade: 'O' }));
+                    others = branchCredits[2].map((cr, i) => ({ name: `Other ${i + 1}`, credits: cr, grade: 'A+' }));
                 }
             }
 
@@ -54,7 +54,7 @@ const GPACalculator = () => {
     };
 
     const handleAddGpaSubject = () => {
-        setGpaSubjects([...gpaSubjects, { name: '', credits: '', grade: 'O' }]);
+        setGpaSubjects([...gpaSubjects, { name: '', credits: '', grade: 'A+' }]);
     };
 
     const handleUpdateGpaSubject = (index, field, value) => {
@@ -71,12 +71,12 @@ const GPACalculator = () => {
 
     // RVR & JC Regulation Grade Points
     const gradePoints = {
-        'O': 10,
-        'A+': 9,
-        'A': 8,
-        'B+': 7,
-        'B': 6,
-        'C': 5,
+        'A+': 10,
+        'A': 9,
+        'B': 8,
+        'C': 7,
+        'D': 6,
+        'E': 5,
         'F': 0
     };
 
@@ -178,12 +178,12 @@ const GPACalculator = () => {
                                 value={sub.grade}
                                 onChange={(e) => handleUpdateGpaSubject(idx, 'grade', e.target.value)}
                             >
-                                <option value="O">O (10)</option>
-                                <option value="A+">A+ (9)</option>
-                                <option value="A">A (8)</option>
-                                <option value="B+">B+ (7)</option>
-                                <option value="B">B (6)</option>
-                                <option value="C">C (5)</option>
+                                <option value="A+">A+ (10)</option>
+                                <option value="A">A (9)</option>
+                                <option value="B">B (8)</option>
+                                <option value="C">C (7)</option>
+                                <option value="D">D (6)</option>
+                                <option value="E">E (5)</option>
                                 <option value="F">F (0)</option>
                             </select>
                             <button
