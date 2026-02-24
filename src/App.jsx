@@ -215,32 +215,97 @@ function App() {
     </div>
   );
 
+  const downloadTimetable = () => {
+    if (!schedule) return;
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Day,Subject,Study Hours,Status\n";
+    schedule.items.forEach(item => {
+      csvContent += `${item.dayIndex},${item.subject},${item.hours},${item.completed ? 'Completed' : 'Pending'}\n`;
+    });
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `StudyPlan_${new Date().toLocaleDateString()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const renderProgress = () => {
-    if (!schedule) return <div className="content-wrapper"><div className="top-header"><h1>Progress Tracker</h1><p>Please generate a plan first.</p></div></div>;
+    if (!schedule) return (
+      <div className="content-wrapper">
+        <div className="top-header">
+          <h1>Progress Tracker</h1>
+          <p>Please generate a plan first.</p>
+        </div>
+      </div>
+    );
+
     const completedDays = schedule.items.filter(d => d.completed).length;
     const progressPercent = Math.round((completedDays / schedule.days) * 100);
+
     const toggleComplete = (dayIndex) => {
-      setSchedule({ ...schedule, items: schedule.items.map(d => d.dayIndex === dayIndex ? { ...d, completed: !d.completed } : d) });
+      setSchedule({
+        ...schedule,
+        items: schedule.items.map(d => d.dayIndex === dayIndex ? { ...d, completed: !d.completed } : d)
+      });
     };
+
     return (
       <div className="content-wrapper">
-        <div className="top-header"><h1>Track Progress</h1><p>Completion: {progressPercent}%</p></div>
-        <div className="panel-card" style={{ display: 'flex', justifyContent: 'space-between', padding: '1.5rem 2rem', marginBottom: '2rem' }}>
-          {['Days Remaining', 'Total Hours', 'Subjects', 'Est. Hrs / Sub'].map((label, i) => (
-            <div key={label}>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase' }}>{label}</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '700' }}>{[schedule.days, schedule.totalHours, schedule.numSubjects, schedule.estimatedHoursPerSubject][i]}</div>
+        <div className="top-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h1>Daily Study Timeline</h1>
+            <p>Overall Progress: {progressPercent}% Completed</p>
+          </div>
+          <button
+            onClick={downloadTimetable}
+            className="btn-secondary"
+            style={{ padding: '0.6rem 1.2rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', cursor: 'pointer' }}
+          >
+            📥 Download Timetable (CSV)
+          </button>
+        </div>
+
+        <div className="stats-strip shadow-sm">
+          {[
+            { label: 'Days Total', val: schedule.days, icon: '📅' },
+            { label: 'Study Hours', val: schedule.totalHours, icon: '⏱️' },
+            { label: 'Subjects', val: schedule.numSubjects, icon: '📚' },
+            { label: 'Avg Hrs/Sub', val: schedule.estimatedHoursPerSubject, icon: '🎯' }
+          ].map((stat, i) => (
+            <div key={i} className="stat-pill">
+              <span style={{ fontSize: '1.2rem' }}>{stat.icon}</span>
+              <div>
+                <div className="stat-label">{stat.label}</div>
+                <div className="stat-val">{stat.val}</div>
+              </div>
             </div>
           ))}
         </div>
-        <div className="days-grid">
-          {schedule.items.map(day => (
-            <div key={day.dayIndex} className="day-card" style={{ opacity: day.completed ? 0.6 : 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
-                <h3 className="day-title" style={{ borderBottom: 'none', padding: 0, margin: 0 }}>Day {day.dayIndex}</h3>
-                <input type="checkbox" checked={day.completed} onChange={() => toggleComplete(day.dayIndex)} style={{ cursor: 'pointer' }} />
+
+        <div className="timeline-container">
+          {schedule.items.map((day, idx) => (
+            <div key={day.dayIndex} className={`timeline-item ${day.completed ? 'completed' : ''}`}>
+              <div className="timeline-marker">
+                <div className="marker-line"></div>
+                <div className="marker-dot"></div>
               </div>
-              <div className="day-subjects"><div className="subject-row"><span className="subject-name" style={{ textDecoration: day.completed ? 'line-through' : 'none' }}>{day.subject}</span><span className="time-slot">{day.hours}h</span></div></div>
+              <div className="timeline-content card-hover">
+                <div className="day-meta">
+                  <span className="day-badge">Day {day.dayIndex}</span>
+                  <div className="custom-checkbox" onClick={() => toggleComplete(day.dayIndex)}>
+                    <div className={`checkbox-box ${day.completed ? 'checked' : ''}`}>
+                      {day.completed && '✓'}
+                    </div>
+                    <span className="checkbox-text">{day.completed ? 'Completed' : 'Mark as done'}</span>
+                  </div>
+                </div>
+                <div className="subject-info">
+                  <h3 className="subject-title">{day.subject}</h3>
+                  <div className="hour-pill">⏱️ {day.hours} Hours Session</div>
+                </div>
+              </div>
             </div>
           ))}
         </div>

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 const rvrjcSubjects = {
-    '1': ["Mathematics - I", "Engineering Physics", "BEEE", "Programming for Problem Solving", "Engineering Graphics"],
-    '2': ["Mathematics - II", "Engineering Chemistry", "Digital Electronics", "English for Communication", "Python Programming"],
-    '3': ["Discrete Mathematics", "Data Structures", "Computer Organization", "Object Oriented Programming", "Professional Ethics"],
-    '4': ["Operating Systems", "Database Management Systems", "Software Engineering", "FLAT", "Web Technologies"],
-    '5': ["Computer Networks", "Artificial Intelligence", "Design & Analysis of Algorithms", "Compiler Design", "Microprocessors"],
-    '6': ["Machine Learning", "Cloud Computing", "Big Data Analytics", "Information Security", "Agile Methodologies"],
-    '7': ["Deep Learning", "Internet of Things", "Cyber Security", "Distributed Systems", "General Elective"],
-    '8': ["Project Work", "Technical Seminar", "Internship", "Comprehensive Viva"]
+  '1': ["Mathematics - I", "Engineering Physics", "BEEE", "Programming for Problem Solving", "Engineering Graphics", "Physics Lab", "English Communication Lab"],
+  '2': ["Mathematics - II", "Engineering Chemistry", "Digital Electronics", "English for Communication", "Python Programming", "Chemistry Lab", "Python Lab"],
+  '3': ["Discrete Mathematics", "Data Structures", "Computer Organization", "Object Oriented Programming", "Professional Ethics", "Data Structures Lab", "Object Oriented Programming Lab"],
+  '4': ["Operating Systems", "Database Management Systems", "Software Engineering", "FLAT", "Web Technologies", "OS Lab", "DBMS Lab", "Web Technologies Lab"],
+  '5': ["Computer Networks", "Artificial Intelligence", "Design & Analysis of Algorithms", "Compiler Design", "Microprocessors", "Computer Networks Lab", "Algorithm Lab", "Microprocessors Lab"],
+  '6': ["Machine Learning", "Cloud Computing", "Big Data Analytics", "Information Security", "Agile Methodologies", "Machine Learning Lab", "Cloud Computing Lab"],
+  '7': ["Deep Learning", "Internet of Things", "Cyber Security", "Distributed Systems", "General Elective", "IoT Lab", "Deep Learning Lab"],
+  '8': ["Project Work", "Technical Seminar", "Internship", "Comprehensive Viva"]
 };
 
 const AttendanceTracker = () => {
