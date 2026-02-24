@@ -21,7 +21,6 @@ function App() {
   })
 
   const level = Math.floor(xp / 100) + 1;
-  const xpForNextLevel = level * 100;
   const currentLevelProgress = xp % 100;
 
   // Advanced Planner State (Shovel-like Timeboxing)
@@ -463,7 +462,7 @@ function App() {
         </div>
 
         <div className="timeline-container">
-          {schedule.items.map((day, idx) => (
+          {schedule.items.map((day) => (
             <div key={day.dayIndex} className={`timeline-item ${day.completed ? 'completed' : ''}`}>
               <div className="timeline-marker">
                 <div className="marker-line"></div>

@@ -1,37 +1,41 @@
 import React, { useState, useEffect } from 'react';
-
-const rvrjcSubjects = {
-  '1': ["Mathematics - I", "Engineering Physics", "BEEE", "Programming for Problem Solving", "Engineering Graphics", "Physics Lab", "English Communication Lab"],
-  '2': ["Mathematics - II", "Engineering Chemistry", "Digital Electronics", "English for Communication", "Python Programming", "Chemistry Lab", "Python Lab"],
-  '3': ["Discrete Mathematics", "Data Structures", "Computer Organization", "Object Oriented Programming", "Professional Ethics", "Data Structures Lab", "Object Oriented Programming Lab"],
-  '4': ["Operating Systems", "Database Management Systems", "Software Engineering", "FLAT", "Web Technologies", "OS Lab", "DBMS Lab", "Web Technologies Lab"],
-  '5': ["Computer Networks", "Artificial Intelligence", "Design & Analysis of Algorithms", "Compiler Design", "Microprocessors", "Computer Networks Lab", "Algorithm Lab", "Microprocessors Lab"],
-  '6': ["Machine Learning", "Cloud Computing", "Big Data Analytics", "Information Security", "Agile Methodologies", "Machine Learning Lab", "Cloud Computing Lab"],
-  '7': ["Deep Learning", "Internet of Things", "Cyber Security", "Distributed Systems", "General Elective", "IoT Lab", "Deep Learning Lab"],
-  '8': ["Project Work", "Technical Seminar", "Internship", "Comprehensive Viva"]
-};
+import { creditsData } from '../data/creditsData';
 
 const AttendanceTracker = () => {
-    const [selectedSem, setSelectedSem] = useState(() => {
-        return localStorage.getItem('study_selected_sem_v5') || '1';
+    const [branchConfig, setBranchConfig] = useState(() => {
+        const saved = localStorage.getItem('study_attendance_config_v1');
+        if (saved) return JSON.parse(saved);
+        return { branch: 'cse', year: '1', sem: '1' };
     });
     const [attendanceData, setAttendanceData] = useState(() => {
-        const saved = localStorage.getItem('study_attendance_v5');
+        const saved = localStorage.getItem('study_attendance_v6');
         if (saved) return JSON.parse(saved);
         return [];
     });
 
     useEffect(() => {
-        localStorage.setItem('study_selected_sem_v5', selectedSem);
-        localStorage.setItem('study_attendance_v5', JSON.stringify(attendanceData));
-    }, [selectedSem, attendanceData]);
+        localStorage.setItem('study_attendance_config_v1', JSON.stringify(branchConfig));
+        localStorage.setItem('study_attendance_v6', JSON.stringify(attendanceData));
+    }, [branchConfig, attendanceData]);
 
     const handleLoadSemester = () => {
-        const subjects = rvrjcSubjects[selectedSem].map(name => ({
-            subject: name,
-            attended: '',
-            total: ''
-        }));
+        const key = `${branchConfig.year}.${branchConfig.sem}`;
+        const branchCredits = creditsData[branchConfig.branch] && creditsData[branchConfig.branch][key];
+
+        let subjects = [];
+        if (branchCredits) {
+            const theory = branchCredits[0] ? branchCredits[0].map((_, i) => ({ subject: `Subject ${i + 1}`, attended: '', total: '' })) : [];
+            const labs = branchCredits[1] ? branchCredits[1].map((_, i) => ({ subject: `Lab ${i + 1}`, attended: '', total: '' })) : [];
+            const others = branchCredits[2] ? branchCredits[2].map((_, i) => ({ subject: `Other ${i + 1}`, attended: '', total: '' })) : [];
+            subjects = [...theory, ...labs, ...others];
+        } else {
+            // Fallback if data is missing for that specific sem
+            subjects = [
+                ...[1, 2, 3, 4, 5].map(i => ({ subject: `Subject ${i}`, attended: '', total: '' })),
+                ...[1, 2, 3].map(i => ({ subject: `Lab ${i}`, attended: '', total: '' }))
+            ];
+        }
+
         setAttendanceData(subjects);
     };
 
@@ -81,18 +85,40 @@ const AttendanceTracker = () => {
                     </div>
                 </div>
 
-                <div className="panel-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Semester</label>
-                    <select
-                        className="input-field"
-                        value={selectedSem}
-                        onChange={(e) => setSelectedSem(e.target.value)}
-                        style={{ margin: '0.5rem 0' }}
-                    >
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                            <option key={num} value={num.toString()}>Semester {num}</option>
-                        ))}
-                    </select>
+                <div className="panel-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <div style={{ flex: 1 }}>
+                            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Branch</label>
+                            <select
+                                className="input-field"
+                                value={branchConfig.branch}
+                                onChange={(e) => setBranchConfig({ ...branchConfig, branch: e.target.value })}
+                            >
+                                <option value="cse">CSE</option>
+                                <option value="ece">ECE</option>
+                                <option value="eee">EEE</option>
+                                <option value="it">IT</option>
+                                <option value="mech">MECH</option>
+                                <option value="civil">CIVIL</option>
+                                <option value="chemical">CHEMICAL</option>
+                                <option value="csm">CSM</option>
+                                <option value="cso">CSO</option>
+                                <option value="csbs">CSBS</option>
+                                <option value="csd">CSD</option>
+                            </select>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Year.Sem</label>
+                            <div style={{ display: 'flex', gap: '0.2rem' }}>
+                                <select className="input-field" value={branchConfig.year} onChange={(e) => setBranchConfig({ ...branchConfig, year: e.target.value })}>
+                                    {[1, 2, 3, 4].map(y => <option key={y} value={y}>{y}</option>)}
+                                </select>
+                                <select className="input-field" value={branchConfig.sem} onChange={(e) => setBranchConfig({ ...branchConfig, sem: e.target.value })}>
+                                    {[1, 2].map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <button onClick={handleLoadSemester} className="btn-primary" style={{ padding: '0.5rem', fontSize: '0.85rem' }}>Reload Subjects</button>
                 </div>
             </div>
