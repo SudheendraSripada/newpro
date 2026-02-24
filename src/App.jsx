@@ -4,6 +4,7 @@ import DashboardOverview from './components/DashboardOverview'
 import AttendanceTracker from './components/AttendanceTracker'
 import GPACalculator from './components/GPACalculator'
 import InternalCalculator from './components/InternalCalculator'
+import PomodoroTimer from './components/PomodoroTimer'
 
 function App() {
   const [currentTab, setCurrentTab] = useState('dashboard')
@@ -12,6 +13,16 @@ function App() {
   })
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  // Gamification State
+  const [xp, setXp] = useState(() => {
+    const saved = localStorage.getItem('study_xp_v1')
+    return saved ? parseInt(saved, 10) : 0
+  })
+
+  const level = Math.floor(xp / 100) + 1;
+  const xpForNextLevel = level * 100;
+  const currentLevelProgress = xp % 100;
 
   // Advanced Planner State (Shovel-like Timeboxing)
   const [tasks, setTasks] = useState(() => {
@@ -30,6 +41,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('study_theme', isDarkMode ? 'dark' : 'light')
   }, [isDarkMode])
+
+  useEffect(() => {
+    localStorage.setItem('study_xp_v1', xp.toString())
+  }, [xp])
 
   useEffect(() => {
     localStorage.setItem('study_tasks_v4', JSON.stringify(tasks))
@@ -191,6 +206,21 @@ function App() {
           <span style={{ fontSize: '1.5rem' }}>✨</span> Study Board
           <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)}>×</button>
         </div>
+
+        {/* Gamification Profile */}
+        <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>Level {level} Scholar</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>{xp} XP</span>
+          </div>
+          <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--input-bg)', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ width: `${currentLevelProgress}%`, height: '100%', backgroundColor: 'var(--accent-color)', transition: 'width 0.3s ease' }}></div>
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem', textAlign: 'right' }}>
+            {100 - currentLevelProgress} XP to next level
+          </div>
+        </div>
+
         <div className="sidebar-nav">
           <div className={`nav-item ${currentTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setCurrentTab('dashboard'); setIsSidebarOpen(false); }}>
             🏠 Dashboard
@@ -376,7 +406,16 @@ function App() {
         newSchedule.items = newSchedule.items.map(d => {
           if (d.dayIndex === dayIndex) {
             const newAssignments = [...d.assignments];
-            newAssignments[assignmentIndex] = { ...newAssignments[assignmentIndex], completed: !newAssignments[assignmentIndex].completed };
+            const isNowCompleted = !newAssignments[assignmentIndex].completed;
+            newAssignments[assignmentIndex] = { ...newAssignments[assignmentIndex], completed: isNowCompleted };
+
+            // Gamification logic
+            if (isNowCompleted) {
+              setXp(prevXp => prevXp + 10);
+            } else {
+              setXp(prevXp => Math.max(0, prevXp - 10)); // Prevent negative XP
+            }
+
             const allDayComplete = newAssignments.every(a => a.completed);
             return { ...d, assignments: newAssignments, completed: allDayComplete };
           }
@@ -388,21 +427,25 @@ function App() {
 
     return (
       <div className="content-wrapper">
-        <div className="top-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="top-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1>Daily Timeboxed Timeline</h1>
             <p>Overall Progress: {progressPercent}% Completed</p>
           </div>
-          <button
-            onClick={downloadTimetable}
-            className="btn-secondary"
-            style={{ padding: '0.6rem 1.2rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', cursor: 'pointer' }}
-          >
-            📥 Download Timetable (CSV)
-          </button>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-end', minWidth: '300px' }}>
+            <PomodoroTimer addXp={(amount) => setXp(prev => prev + amount)} />
+            <button
+              onClick={downloadTimetable}
+              className="btn-secondary"
+              style={{ width: '100%', padding: '0.6rem 1.2rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', cursor: 'pointer' }}
+            >
+              📥 Download Timetable (CSV)
+            </button>
+          </div>
         </div>
 
-        <div className="stats-strip shadow-sm">
+        <div className="stats-strip shadow-sm" style={{ marginTop: '2rem' }}>
           {[
             { label: 'Total Available Time', val: `${schedule.totalAvailable} hrs`, icon: '⏱️' },
             { label: 'Time Required', val: `${schedule.totalRequired} hrs`, icon: '🎯' },
