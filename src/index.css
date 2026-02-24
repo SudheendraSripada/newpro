@@ -1,16 +1,18 @@
 :root {
-  --bg-primary: #f4f6f8;
+  --bg-primary: #f8fafc;
   --bg-card: #ffffff;
   --bg-sidebar: #ffffff;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
-  --accent-color: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  --accent-color: #ea580c;
+  /* Orange-600 */
+  --accent-hover: #c2410c;
+  /* Orange-700 */
+  --accent-gradient: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
   --border-color: #e2e8f0;
   --input-bg: #f8fafc;
   --input-border: #cbd5e1;
-  --input-focus: rgba(59, 130, 246, 0.3);
+  --input-focus: rgba(234, 88, 12, 0.3);
   --success: #10b981;
   --warning: #ef4444;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -24,12 +26,14 @@
   --bg-sidebar: #1e293b;
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
-  --accent-color: #60a5fa;
-  --accent-hover: #3b82f6;
+  --accent-color: #fb923c;
+  /* Orange-400 */
+  --accent-hover: #ea580c;
+  /* Orange-600 */
   --border-color: #334155;
   --input-bg: #0f172a;
   --input-border: #475569;
-  --input-focus: rgba(96, 165, 250, 0.2);
+  --input-focus: rgba(251, 146, 250, 0.2);
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);

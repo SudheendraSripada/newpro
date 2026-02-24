@@ -3,6 +3,7 @@ import './App.css'
 import DashboardOverview from './components/DashboardOverview'
 import AttendanceTracker from './components/AttendanceTracker'
 import GPACalculator from './components/GPACalculator'
+import InternalCalculator from './components/InternalCalculator'
 
 function App() {
   const [currentTab, setCurrentTab] = useState('dashboard')
@@ -153,6 +154,9 @@ function App() {
           </div>
           <div className={`nav-item ${currentTab === 'attendance' ? 'active' : ''}`} onClick={() => { setCurrentTab('attendance'); setIsSidebarOpen(false); }}>
             📝 Attendance
+          </div>
+          <div className={`nav-item ${currentTab === 'internals' ? 'active' : ''}`} onClick={() => { setCurrentTab('internals'); setIsSidebarOpen(false); }}>
+            🧮 Internals
           </div>
           <div className={`nav-item ${currentTab === 'gpa' ? 'active' : ''}`} onClick={() => { setCurrentTab('gpa'); setIsSidebarOpen(false); }}>
             🎓 GPA Calculator
@@ -342,6 +346,7 @@ function App() {
         {currentTab === 'progress' && renderProgress()}
         {currentTab === 'analytics' && renderAnalytics()}
         {currentTab === 'attendance' && <AttendanceTracker />}
+        {currentTab === 'internals' && <InternalCalculator />}
         {currentTab === 'gpa' && <GPACalculator />}
       </main>
     </div>
