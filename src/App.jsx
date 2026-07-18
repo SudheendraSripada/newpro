@@ -5,6 +5,8 @@ import AttendanceTracker from './components/AttendanceTracker'
 import GPACalculator from './components/GPACalculator'
 import InternalCalculator from './components/InternalCalculator'
 import PomodoroTimer from './components/PomodoroTimer'
+import ExamVault from './components/ExamVault'
+import AdminDashboard from './components/AdminDashboard'
 
 function App() {
   const [currentTab, setCurrentTab] = useState('dashboard')
@@ -74,7 +76,7 @@ function App() {
     const gpa = tCredits > 0 ? (tPoints / tCredits).toFixed(2) : "0.00";
 
     // Attendance (Aggregate Formula: Total Attended / Total Conducted)
-    const attSaved = localStorage.getItem('study_attendance_v5');
+    const attSaved = localStorage.getItem('study_attendance_v6');
     const attArr = attSaved ? JSON.parse(attSaved) : [];
     let totalAttended = 0, totalConducted = 0;
     attArr.forEach(r => {
@@ -242,6 +244,12 @@ function App() {
           <div className={`nav-item ${currentTab === 'gpa' ? 'active' : ''}`} onClick={() => { setCurrentTab('gpa'); setIsSidebarOpen(false); }}>
             🎓 GPA Calculator
           </div>
+          <div className={`nav-item ${currentTab === 'vault' ? 'active' : ''}`} onClick={() => { setCurrentTab('vault'); setIsSidebarOpen(false); }}>
+            📚 PYQ Vault
+          </div>
+          <div className={`nav-item ${currentTab === 'admin' ? 'active' : ''}`} onClick={() => { setCurrentTab('admin'); setIsSidebarOpen(false); }}>
+            🔐 Admin
+          </div>
         </div>
 
         <div
@@ -365,9 +373,11 @@ function App() {
   const downloadTimetable = () => {
     if (!schedule) return;
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Day,Subject,Study Hours,Status\n";
+    csvContent += "Day,Date,Task,Study Hours,Status\n";
     schedule.items.forEach(item => {
-      csvContent += `${item.dayIndex},${item.subject},${item.hours},${item.completed ? 'Completed' : 'Pending'}\n`;
+      item.assignments.forEach(assignment => {
+        csvContent += `${item.dayIndex},${item.date},"${assignment.name.replace(/"/g, '""')}",${assignment.hoursSpent},${assignment.completed ? 'Completed' : 'Pending'}\n`;
+      });
     });
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -546,6 +556,8 @@ function App() {
         {currentTab === 'attendance' && <AttendanceTracker />}
         {currentTab === 'internals' && <InternalCalculator />}
         {currentTab === 'gpa' && <GPACalculator />}
+        {currentTab === 'vault' && <ExamVault />}
+        {currentTab === 'admin' && <AdminDashboard />}
       </main>
     </div>
   );
