@@ -50,6 +50,23 @@ export function publicStorageUrl(supabase, bucket, path) {
   return data?.publicUrl || null
 }
 
+function adminSecretFromAuthorization(header = '') {
+  if (!header) return ''
+  if (/^Bearer\s+/i.test(header)) return header.replace(/^Bearer\s+/i, '')
+
+  if (/^Basic\s+/i.test(header)) {
+    try {
+      const decoded = Buffer.from(header.replace(/^Basic\s+/i, ''), 'base64').toString('utf8')
+      const separator = decoded.indexOf(':')
+      return separator >= 0 ? decoded.slice(separator + 1) : decoded
+    } catch {
+      return ''
+    }
+  }
+
+  return header
+}
+
 export function requireAdmin(req, res) {
   const expected = process.env.ADMIN_ACCESS_KEY
   if (!expected) {
@@ -63,7 +80,7 @@ export function requireAdmin(req, res) {
   const provided =
     req.headers['x-admin-key'] ||
     req.headers['X-Admin-Key'] ||
-    req.headers.authorization?.replace(/^Bearer\s+/i, '')
+    adminSecretFromAuthorization(req.headers.authorization)
 
   if (!provided || provided !== expected) {
     json(res, 401, { error: 'Admin access key is missing or invalid.' })

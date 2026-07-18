@@ -22,11 +22,15 @@ body {
 /* Sidebar */
 .sidebar {
   width: 250px;
+  height: 100vh;
+  min-height: 0;
+  flex: 0 0 250px;
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border-color);
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   box-shadow: var(--shadow-sm);
   z-index: 100;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -93,7 +97,23 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.25rem;
+  margin-right: -0.25rem;
+}
+
+.sidebar-nav::-webkit-scrollbar,
+.vault-tree::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb,
+.vault-tree::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 999px;
 }
 
 .nav-item {
@@ -125,6 +145,10 @@ body {
   flex-direction: column;
   overflow-y: auto;
   position: relative;
+}
+
+.admin-route .main-content {
+  width: 100%;
 }
 
 .top-header {
@@ -596,6 +620,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .vault-browser-header {
@@ -648,7 +673,9 @@ body {
 }
 
 .vault-tree {
+  flex: 1 1 auto;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 0 0.75rem 1rem;
   min-height: 0;
 }
@@ -978,6 +1005,15 @@ body {
   padding: 0 0 3rem;
 }
 
+.admin-locked-page {
+  min-height: 100vh;
+}
+
+.admin-lock-card {
+  width: min(460px, calc(100% - 2rem));
+  margin: 2rem auto;
+}
+
 .admin-top {
   display: flex;
   align-items: flex-start;
@@ -1013,8 +1049,7 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-.admin-panel:nth-child(3),
-.admin-panel:nth-child(4) {
+.admin-panel:nth-child(n + 3) {
   grid-column: 1 / -1;
 }
 
@@ -1144,8 +1179,7 @@ body {
     padding: 1rem 1.25rem 3rem;
   }
 
-  .admin-panel:nth-child(3),
-  .admin-panel:nth-child(4) {
+  .admin-panel:nth-child(n + 3) {
     grid-column: auto;
   }
 }

@@ -27,13 +27,16 @@ export default defineConfig([
     },
   },
   {
-    files: ['api/**/*.js'],
+    files: ['api/**/*.js', 'middleware.js'],
     extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: 'latest',
       globals: {
         ...globals.node,
         fetch: 'readonly',
+        Request: 'readonly',
+        Response: 'readonly',
+        atob: 'readonly',
       },
       parserOptions: {
         ecmaVersion: 'latest',

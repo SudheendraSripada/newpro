@@ -36,8 +36,8 @@ export default async function handler(req, res) {
       .eq('regulation', params.regulation)
       .eq('academic_year', Number(params.academicYear))
       .eq('semester', Number(params.semester))
-      .eq('department_code', params.departmentCode)
-      .eq('subject_code', params.subjectCode)
+      .eq('department_code', String(params.departmentCode).toLowerCase())
+      .eq('subject_code', String(params.subjectCode).toUpperCase())
   }
 
   const { data: subjects, error: subjectError } = await subjectQuery

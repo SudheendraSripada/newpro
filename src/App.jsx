@@ -9,6 +9,7 @@ import ExamVault from './components/ExamVault'
 import AdminDashboard from './components/AdminDashboard'
 
 function App() {
+  const isAdminRoute = window.location.pathname.replace(/\/$/, '') === '/admin'
   const [currentTab, setCurrentTab] = useState('dashboard')
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('study_theme') === 'dark'
@@ -246,9 +247,6 @@ function App() {
           </div>
           <div className={`nav-item ${currentTab === 'vault' ? 'active' : ''}`} onClick={() => { setCurrentTab('vault'); setIsSidebarOpen(false); }}>
             📚 PYQ Vault
-          </div>
-          <div className={`nav-item ${currentTab === 'admin' ? 'active' : ''}`} onClick={() => { setCurrentTab('admin'); setIsSidebarOpen(false); }}>
-            🔐 Admin
           </div>
         </div>
 
@@ -545,19 +543,19 @@ function App() {
   }
 
   return (
-    <div className={`dashboard-layout ${isDarkMode ? 'dark-theme' : ''}`}>
-      <button className="mobile-hamburger" onClick={() => setIsSidebarOpen(true)}>☰</button>
-      {renderSidebar()}
+    <div className={`dashboard-layout ${isDarkMode ? 'dark-theme' : ''} ${isAdminRoute ? 'admin-route' : ''}`}>
+      {!isAdminRoute && <button className="mobile-hamburger" onClick={() => setIsSidebarOpen(true)}>☰</button>}
+      {!isAdminRoute && renderSidebar()}
       <main className="main-content">
-        {currentTab === 'dashboard' && <DashboardOverview stats={getDashboardStats()} />}
-        {currentTab === 'planner' && renderPlanner()}
-        {currentTab === 'progress' && renderProgress()}
-        {currentTab === 'analytics' && renderAnalytics()}
-        {currentTab === 'attendance' && <AttendanceTracker />}
-        {currentTab === 'internals' && <InternalCalculator />}
-        {currentTab === 'gpa' && <GPACalculator />}
-        {currentTab === 'vault' && <ExamVault />}
-        {currentTab === 'admin' && <AdminDashboard />}
+        {isAdminRoute && <AdminDashboard />}
+        {!isAdminRoute && currentTab === 'dashboard' && <DashboardOverview stats={getDashboardStats()} />}
+        {!isAdminRoute && currentTab === 'planner' && renderPlanner()}
+        {!isAdminRoute && currentTab === 'progress' && renderProgress()}
+        {!isAdminRoute && currentTab === 'analytics' && renderAnalytics()}
+        {!isAdminRoute && currentTab === 'attendance' && <AttendanceTracker />}
+        {!isAdminRoute && currentTab === 'internals' && <InternalCalculator />}
+        {!isAdminRoute && currentTab === 'gpa' && <GPACalculator />}
+        {!isAdminRoute && currentTab === 'vault' && <ExamVault />}
       </main>
     </div>
   );

@@ -75,8 +75,9 @@ export default async function handler(req, res) {
     await upsertPortalSetting(supabase, 'nvidia_provider', provider, false)
 
     const nextApiKey = String(body.apiKey || '').trim()
+    let savedApiKey = null
     if (nextApiKey) {
-      await upsertPortalSetting(
+      savedApiKey = await upsertPortalSetting(
         supabase,
         'nvidia_api_key',
         {
@@ -85,12 +86,14 @@ export default async function handler(req, res) {
         },
         true
       )
+    } else {
+      savedApiKey = await getPortalSetting(supabase, 'nvidia_api_key', null)
     }
 
     return json(res, 200, {
       ok: true,
       provider,
-      apiKey: maskSecret(nextApiKey || process.env.NVIDIA_API_KEY),
+      apiKey: maskSecret(process.env.NVIDIA_API_KEY || nextApiKey || savedApiKey?.value),
     })
   } catch (error) {
     return json(res, 500, { error: error.message || 'Admin settings request failed.' })

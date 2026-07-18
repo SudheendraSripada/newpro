@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Database, FileText, KeyRound, Save, Settings, UploadCloud } from 'lucide-react'
 
 const DEFAULT_PROVIDER = {
@@ -27,40 +27,33 @@ const DEFAULT_PAPER = {
     extractedText: '',
 }
 
-function adminHeaders(adminKey) {
+function adminHeaders() {
     return {
         'Content-Type': 'application/json',
-        'X-Admin-Key': adminKey,
     }
 }
 
 export default function AdminDashboard() {
-    const [adminKey, setAdminKey] = useState(() => sessionStorage.getItem('newpro_admin_key') || '')
     const [provider, setProvider] = useState(DEFAULT_PROVIDER)
     const [apiKey, setApiKey] = useState('')
     const [apiKeyStatus, setApiKeyStatus] = useState({ configured: false, preview: '' })
     const [envOverrides, setEnvOverrides] = useState({})
     const [paper, setPaper] = useState(DEFAULT_PAPER)
     const [uploadFile, setUploadFile] = useState(null)
-    const [manifest, setManifest] = useState('')
+    const [bulkFiles, setBulkFiles] = useState([])
+    const [bulkManifest, setBulkManifest] = useState('')
+    const [indexManifest, setIndexManifest] = useState('')
     const [message, setMessage] = useState('')
     const [error, setError] = useState('')
     const [busy, setBusy] = useState(false)
 
-    const canSubmit = useMemo(() => adminKey.trim().length > 0, [adminKey])
-
-    useEffect(() => {
-        if (adminKey) sessionStorage.setItem('newpro_admin_key', adminKey)
-    }, [adminKey])
-
-    const loadSettings = async () => {
-        if (!canSubmit) return
+    const loadSettings = useCallback(async () => {
         setBusy(true)
         setError('')
         setMessage('')
         try {
             const response = await fetch('/api/admin/settings', {
-                headers: { 'X-Admin-Key': adminKey },
+                credentials: 'same-origin',
             })
             const payload = await response.json()
             if (!response.ok) throw new Error(payload.error || 'Could not load settings.')
@@ -73,18 +66,18 @@ export default function AdminDashboard() {
         } finally {
             setBusy(false)
         }
-    }
+    }, [])
 
     const saveSettings = async (event) => {
         event.preventDefault()
-        if (!canSubmit) return
         setBusy(true)
         setError('')
         setMessage('')
         try {
             const response = await fetch('/api/admin/settings', {
                 method: 'POST',
-                headers: adminHeaders(adminKey),
+                headers: adminHeaders(),
+                credentials: 'same-origin',
                 body: JSON.stringify({ provider, apiKey }),
             })
             const payload = await response.json()
@@ -101,14 +94,14 @@ export default function AdminDashboard() {
 
     const indexPaper = async (event) => {
         event.preventDefault()
-        if (!canSubmit) return
         setBusy(true)
         setError('')
         setMessage('')
         try {
             const response = await fetch('/api/admin/papers', {
                 method: 'POST',
-                headers: adminHeaders(adminKey),
+                headers: adminHeaders(),
+                credentials: 'same-origin',
                 body: JSON.stringify({
                     metadata: {
                         ...paper,
@@ -131,7 +124,7 @@ export default function AdminDashboard() {
 
     const uploadPaper = async (event) => {
         event.preventDefault()
-        if (!canSubmit || !uploadFile) return
+        if (!uploadFile) return
         setBusy(true)
         setError('')
         setMessage('')
@@ -142,7 +135,7 @@ export default function AdminDashboard() {
 
             const response = await fetch('/api/admin/upload-paper', {
                 method: 'POST',
-                headers: { 'X-Admin-Key': adminKey },
+                credentials: 'same-origin',
                 body,
             })
             const payload = await response.json()
@@ -157,18 +150,18 @@ export default function AdminDashboard() {
 
     const importManifest = async (event) => {
         event.preventDefault()
-        if (!canSubmit) return
         setBusy(true)
         setError('')
         setMessage('')
         try {
-            const parsed = JSON.parse(manifest)
+            const parsed = JSON.parse(indexManifest)
             const papers = Array.isArray(parsed) ? parsed : parsed.papers
             if (!Array.isArray(papers)) throw new Error('Manifest must be an array or an object with a papers array.')
 
             const response = await fetch('/api/admin/papers', {
                 method: 'POST',
-                headers: adminHeaders(adminKey),
+                headers: adminHeaders(),
+                credentials: 'same-origin',
                 body: JSON.stringify({ papers }),
             })
             const payload = await response.json()
@@ -181,7 +174,37 @@ export default function AdminDashboard() {
         }
     }
 
+    const uploadBulkPapers = async (event) => {
+        event.preventDefault()
+        if (bulkFiles.length === 0) return
+        setBusy(true)
+        setError('')
+        setMessage('')
+        try {
+            const body = new FormData()
+            bulkFiles.forEach((file) => body.append('files', file))
+            body.append('manifest', bulkManifest)
+
+            const response = await fetch('/api/admin/upload-paper', {
+                method: 'POST',
+                credentials: 'same-origin',
+                body,
+            })
+            const payload = await response.json()
+            if (!response.ok) throw new Error(payload.error || 'Bulk upload failed.')
+            setMessage(`${payload.results?.length || 0} PDFs uploaded and indexed.`)
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setBusy(false)
+        }
+    }
+
     const setPaperField = (key, value) => setPaper((prev) => ({ ...prev, [key]: value }))
+
+    useEffect(() => {
+        loadSettings()
+    }, [loadSettings])
 
     return (
         <div className="admin-page">
@@ -190,7 +213,7 @@ export default function AdminDashboard() {
                     <h1>Admin Dashboard</h1>
                     <p>Manage AI provider settings, paper uploads, and searchable PYQ metadata.</p>
                 </div>
-                <button className="btn-secondary admin-load" onClick={loadSettings} disabled={!canSubmit || busy} type="button">
+                <button className="btn-secondary admin-load" onClick={loadSettings} disabled={busy} type="button">
                     <Settings size={18} />
                     Load Settings
                 </button>
@@ -202,14 +225,7 @@ export default function AdminDashboard() {
                         <KeyRound size={20} />
                         <h2>Admin Access</h2>
                     </div>
-                    <p>The access key is checked by serverless API routes and is not stored permanently in the app.</p>
-                    <input
-                        className="input-field"
-                        type="password"
-                        value={adminKey}
-                        onChange={(event) => setAdminKey(event.target.value)}
-                        placeholder="Enter ADMIN_ACCESS_KEY"
-                    />
+                    <p>This page is protected by the browser password prompt at `/admin`; use username `admin` and your `ADMIN_ACCESS_KEY` as the password.</p>
                     {apiKeyStatus.configured && (
                         <div className="status-pill good">NVIDIA key configured: {apiKeyStatus.preview}</div>
                     )}
@@ -287,7 +303,7 @@ export default function AdminDashboard() {
                                 onChange={(event) => setProvider({ ...provider, systemPrompt: event.target.value })}
                             />
                         </label>
-                        <button className="generate-btn admin-submit" disabled={!canSubmit || busy} type="submit">
+                        <button className="generate-btn admin-submit" disabled={busy} type="submit">
                             <Save size={18} />
                             Save AI Settings
                         </button>
@@ -392,9 +408,44 @@ export default function AdminDashboard() {
                                 required
                             />
                         </label>
-                        <button className="generate-btn admin-submit" disabled={!canSubmit || busy} type="submit">
+                        <button className="generate-btn admin-submit" disabled={busy} type="submit">
                             <UploadCloud size={18} />
                             {uploadFile ? 'Upload and Index PDF' : 'Index Existing File'}
+                        </button>
+                    </form>
+                </section>
+
+                <section className="admin-panel">
+                    <div className="admin-panel-title">
+                        <Database size={20} />
+                        <h2>Bulk PDF Upload</h2>
+                    </div>
+                    <form className="admin-form" onSubmit={uploadBulkPapers}>
+                        <label>
+                            Select PDFs
+                            <input
+                                className="input-field"
+                                type="file"
+                                accept="application/pdf"
+                                multiple
+                                onChange={(event) => setBulkFiles(Array.from(event.target.files || []))}
+                            />
+                        </label>
+                        {bulkFiles.length > 0 && (
+                            <div className="status-pill">{bulkFiles.length} PDFs selected</div>
+                        )}
+                        <label>
+                            Upload manifest
+                            <textarea
+                                className="input-field manifest-textarea"
+                                value={bulkManifest}
+                                onChange={(event) => setBulkManifest(event.target.value)}
+                                placeholder='[{"fileName":"semester_2025.pdf","metadata":{"regulation":"r24","academicYear":1,"semester":1,"departmentCode":"cse","departmentName":"CSE","subjectCode":"CS111","subjectName":"Physics","examKind":"semester","paperYear":2025},"extractedText":"..."}]'
+                            />
+                        </label>
+                        <button className="generate-btn admin-submit" disabled={busy || bulkFiles.length === 0 || !bulkManifest.trim()} type="submit">
+                            <UploadCloud size={18} />
+                            Upload Selected PDFs
                         </button>
                     </form>
                 </section>
@@ -408,11 +459,11 @@ export default function AdminDashboard() {
                     <form className="admin-form" onSubmit={importManifest}>
                         <textarea
                             className="input-field manifest-textarea"
-                            value={manifest}
-                            onChange={(event) => setManifest(event.target.value)}
+                            value={indexManifest}
+                            onChange={(event) => setIndexManifest(event.target.value)}
                             placeholder='[{"metadata":{"regulation":"r24","academicYear":1,"semester":1,"departmentCode":"cse","departmentName":"CSE","subjectCode":"CS111","subjectName":"Physics","examKind":"semester","paperYear":2025,"storagePath":"pyqs/r24/year_1/sem_1/cse/CS111/semester_2025.pdf","fileName":"semester_2025.pdf"},"extractedText":"..."}]'
                         />
-                        <button className="generate-btn admin-submit" disabled={!canSubmit || busy} type="submit">
+                        <button className="generate-btn admin-submit" disabled={busy || !indexManifest.trim()} type="submit">
                             <FileText size={18} />
                             Import Manifest
                         </button>

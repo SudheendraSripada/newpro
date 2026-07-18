@@ -64,8 +64,8 @@ async function loadSubject(supabase, payload, regulation) {
     .eq('regulation', regulation)
     .eq('academic_year', Number(payload.academicYear))
     .eq('semester', Number(payload.semester))
-    .eq('department_code', payload.departmentCode)
-    .eq('subject_code', payload.subjectCode)
+    .eq('department_code', String(payload.departmentCode).toLowerCase())
+    .eq('subject_code', String(payload.subjectCode).toUpperCase())
     .limit(1)
 
   if (error) throw new Error(error.message)
@@ -228,6 +228,8 @@ export default async function handler(req, res) {
 
   const examKind = payload.examKind || payload.target_exam
   payload.examKind = examKind
+  if (payload.departmentCode) payload.departmentCode = String(payload.departmentCode).toLowerCase()
+  if (payload.subjectCode) payload.subjectCode = String(payload.subjectCode).toUpperCase()
   const required = ['academicYear', 'semester', 'departmentCode', 'subjectCode', 'examKind']
   const missingFields = required.filter((key) => !payload[key] && !payload.subjectId)
   if (!payload.subjectId && missingFields.length) {
