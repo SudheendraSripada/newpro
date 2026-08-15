@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Privacy Notice</title>
+    <style>
+      body { font-family: Inter, Arial, sans-serif; max-width: 900px; margin: 3rem auto; padding: 0 1rem; color: #111 }
+      h1 { margin-bottom: 0.25rem }
+      p { line-height: 1.5 }
+      .notice { background:#f8fafc; border:1px solid #e6eef6; padding:1rem; border-radius:8px }
+      .flag { color:#b91c1c; font-weight:bold }
+    </style>
+  </head>
+  <body>
+    <h1>Privacy Notice</h1>
+    <p class="notice">This privacy notice is a developer draft. All sections marked <span class="flag">***LEGAL REVIEW***</span> must be finalized by counsel before publishing.</p>
+
+    <h2>1. What personal data we collect</h2>
+    <ul>
+      <li>Inputs you provide in the app (planner tasks, exam dates, GPA entries, attendance data). These are persisted in your browser `localStorage` by default.</li>
+      <li>Server-side data for uploaded PDFs and AI prediction runs (metadata such as department, subject code, paper year). These are stored in our Supabase database.</li>
+      <li>Technical data such as IP address, browser user-agent, and timestamps captured when you submit consent or rights requests.</li>
+    </ul>
+
+    <h2>2. Why we process your data (purposes)</h2>
+    <ul>
+      <li>Core service: storing and presenting your planner, attendance, and GPA so the app functions.</li>
+      <li>AI predictions: using subject and paper metadata to produce study suggestions.</li>
+      <li>Analytics & product improvement: only where you opt in.</li>
+    </ul>
+
+    <h2>3. Lawful basis & consent</h2>
+    <p>We rely on your consent for non-essential processing such as analytics and marketing. Essential processing required to provide the service may proceed without consent when strictly necessary.</p>
+    <p class="flag">***LEGAL REVIEW***: Confirm lawful basis text and cookie/consent language.</p>
+
+    <h2>4. Retention</h2>
+    <p>We retain consent logs and rights requests for a limited period. <span class="flag">***LEGAL REVIEW***</span> — specify retention periods (e.g., 2 years for consent logs, 1 year for requests).</p>
+
+    <h2>5. Third parties</h2>
+    <ul>
+      <li>Supabase — database and storage provider (data controller details available in Supabase documentation).</li>
+      <li>NVIDIA — AI model provider may receive prompt context when AI prediction is requested. Prompts include non-identifying syllabus and paper text.</li>
+      <li>Vercel — hosting infrastructure (may process logs and IP addresses).</li>
+    </ul>
+    <p class="flag">***LEGAL REVIEW***: Add specific processor agreements and international transfer details if applicable.</p>
+
+    <h2>6. Your rights</h2>
+    <ul>
+      <li>Access: request a copy of personal data we hold.</li>
+      <li>Correction: ask us to correct inaccurate data.</li>
+      <li>Erasure: ask us to delete your data (subject to retention exceptions).</li>
+      <li>Withdraw consent: you may withdraw consent for non-essential processing at any time via the Data Rights page.</li>
+    </ul>
+
+    <h2>7. How to exercise rights</h2>
+    <p>Use the Data Rights form: <a href="/data-rights.html">/data-rights.html</a>. We will acknowledge your request and respond within the legally required timeframe. <span class="flag">***LEGAL REVIEW***</span></p>
+
+    <h2>8. Grievance contact</h2>
+    <p>Please direct legal or DPDP complaints to: <strong>privacy@example.com</strong> (replace with DPO contact). Phone: <strong>+91-XXXXXXXXXX</strong>.</p>
+
+    <h2>9. Changes</h2>
+    <p>We may update this notice. Last updated: <!--DATE-->.</p>
+
+    <hr />
+    <p style="font-size:0.9rem; color:#555">This page was added by a developer as part of a DPDP audit. Do not consider it final until legal review. Contact: privacy@example.com</p>
+  </body>
+</html>
