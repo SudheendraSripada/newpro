@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Data Rights Request</title>
+    <style>body{font-family:Inter,Arial,sans-serif;max-width:700px;margin:2rem auto;padding:0 1rem}</style>
+  </head>
+  <body>
+    <h1>Data Rights Request</h1>
+    <p>Use this form to request access, correction, erasure, or withdraw consent.</p>
+    <form method="post" action="/api/dpdp/rights">
+      <label>Your name<br><input name="name" required /></label><br><br>
+      <label>Your email<br><input name="email" type="email" required /></label><br><br>
+      <label>Request type<br>
+        <select name="request_type">
+          <option value="access">Access</option>
+          <option value="correction">Correction</option>
+          <option value="erasure">Erasure</option>
+          <option value="withdraw_consent">Withdraw consent</option>
+        </select>
+      </label><br><br>
+      <label>Details<br><textarea name="details" rows="6"></textarea></label><br><br>
+      <button type="submit">Submit request</button>
+    </form>
+
+    <p style="font-size:0.9rem; color:#555">Note: this endpoint is a developer-provided handler that attempts to persist requests to Supabase. If your deployment doesn't have the `dpdp_requests` table yet, the maintainer will receive the request in logs and handle it manually.</p>
+  </body>
+</html>

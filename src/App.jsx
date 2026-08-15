@@ -7,6 +7,7 @@ import InternalCalculator from './components/InternalCalculator'
 import PomodoroTimer from './components/PomodoroTimer'
 import ExamVault from './components/ExamVault'
 import AdminDashboard from './components/AdminDashboard'
+import ConsentBanner from './components/ConsentBanner'
 
 function App() {
   const isAdminRoute = window.location.pathname.replace(/\/$/, '') === '/admin'
@@ -557,6 +558,13 @@ function App() {
         {!isAdminRoute && currentTab === 'gpa' && <GPACalculator />}
         {!isAdminRoute && currentTab === 'vault' && <ExamVault />}
       </main>
+      <footer style={{ padding: '1rem', borderTop: '1px solid var(--border-color)', textAlign: 'center', fontSize: '0.9rem' }}>
+        <div>
+          <a href="/privacy.html">Privacy Notice</a> · <a href="/data-rights.html">Data Rights Request</a>
+        </div>
+        <div style={{ marginTop: 6 }}>Grievance contact: <strong>privacy@example.com</strong> · +91-XXXXXXXXXX</div>
+      </footer>
+      <ConsentBanner />
     </div>
   );
 }
