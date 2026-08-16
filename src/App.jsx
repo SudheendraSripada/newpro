@@ -7,10 +7,16 @@ import InternalCalculator from './components/InternalCalculator'
 import PomodoroTimer from './components/PomodoroTimer'
 import ExamVault from './components/ExamVault'
 import AdminDashboard from './components/AdminDashboard'
+import { useLocalStorage } from './hooks/useLocalStorage'
+import { generateStudyPlan } from './utils/scheduler'
+import PrivacyNotice from './components/PrivacyNotice'
+import TermsOfService from './components/TermsOfService'
+import ConsentBanner from './components/ConsentBanner'
+import DataRightsForm from './components/DataRightsForm'
 
 function App() {
   const isAdminRoute = window.location.pathname.replace(/\/$/, '') === '/admin'
-  const [currentTab, setCurrentTab] = useState('dashboard')
+  const [currentTab, setCurrentTab] = useLocalStorage('study_currentTab', 'dashboard')
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('study_theme') === 'dark'
   })
@@ -140,53 +146,7 @@ function App() {
     const totalAvailableHours = daysRemaining * parsedDailyHours;
     const cushion = totalAvailableHours - totalRequiredHours;
 
-    // Timeboxing Algorithm Setup
-    const dailyPlan = [];
-    let currentDay = 1;
-    let dayHoursRemaining = parsedDailyHours;
-    let currentDayTasks = [];
-
-    // Create deep copy of tasks to deplete iteratively
-    let remainingTasks = validTasks.map((t, idx) => ({ ...t, id: idx, hoursLeft: parseFloat(t.estimatedHours) }));
-
-    while (remainingTasks.length > 0 && currentDay <= daysRemaining) {
-      let currentTask = remainingTasks[0];
-
-      if (currentTask.hoursLeft <= dayHoursRemaining) {
-        // Can finish this task today
-        currentDayTasks.push({
-          taskId: currentTask.id,
-          name: currentTask.name,
-          hoursSpent: currentTask.hoursLeft,
-          completedTaskPartially: false
-        });
-        dayHoursRemaining -= currentTask.hoursLeft;
-        remainingTasks.shift(); // Remove finished task
-      } else {
-        // Task takes longer than remaining time today
-        currentDayTasks.push({
-          taskId: currentTask.id,
-          name: currentTask.name,
-          hoursSpent: dayHoursRemaining,
-          completedTaskPartially: true
-        });
-        currentTask.hoursLeft -= dayHoursRemaining;
-        dayHoursRemaining = 0;
-      }
-
-      // If day is full or no tasks left, close the day
-      if (dayHoursRemaining === 0 || remainingTasks.length === 0) {
-        dailyPlan.push({
-          dayIndex: currentDay,
-          date: new Date(today.getTime() + (currentDay - 1) * 24 * 60 * 60 * 1000).toLocaleDateString(),
-          assignments: currentDayTasks,
-          completed: false
-        });
-        currentDay++;
-        dayHoursRemaining = parsedDailyHours;
-        currentDayTasks = [];
-      }
-    }
+    const dailyPlan = generateStudyPlan(validTasks, parsedDailyHours, daysRemaining);
 
     setSchedule({
       tasks: validTasks,
@@ -248,6 +208,16 @@ function App() {
           <div className={`nav-item ${currentTab === 'vault' ? 'active' : ''}`} onClick={() => { setCurrentTab('vault'); setIsSidebarOpen(false); }}>
             📚 PYQ Vault
           </div>
+          <div style={{ height: '1px', backgroundColor: 'var(--border-color)', margin: '1rem 0' }}></div>
+          <div className={`nav-item ${currentTab === 'privacy' ? 'active' : ''}`} onClick={() => { setCurrentTab('privacy'); setIsSidebarOpen(false); }}>
+            🔒 Privacy Notice
+          </div>
+          <div className={`nav-item ${currentTab === 'terms' ? 'active' : ''}`} onClick={() => { setCurrentTab('terms'); setIsSidebarOpen(false); }}>
+            📜 Terms of Service
+          </div>
+          <div className={`nav-item ${currentTab === 'datarights' ? 'active' : ''}`} onClick={() => { setCurrentTab('datarights'); setIsSidebarOpen(false); }}>
+            🛡️ Data Rights
+          </div>
         </div>
 
         <div
@@ -262,7 +232,8 @@ function App() {
         </div>
 
         <div className="sidebar-footer" style={{ padding: '0', fontSize: '0.75rem', opacity: 0.7 }}>
-          Built by Sudheendra Sripada<br />Engineering Study Planner
+          Built by Sudheendra Sripada<br />Engineering Study Planner<br />
+          <span style={{ color: 'var(--warning)', marginTop: '4px', display: 'block' }}>Grievance Contact: privacy@engineeringstudyplanner.com</span>
         </div>
       </div>
     </>
@@ -556,7 +527,11 @@ function App() {
         {!isAdminRoute && currentTab === 'internals' && <InternalCalculator />}
         {!isAdminRoute && currentTab === 'gpa' && <GPACalculator />}
         {!isAdminRoute && currentTab === 'vault' && <ExamVault />}
+        {!isAdminRoute && currentTab === 'privacy' && <PrivacyNotice />}
+        {!isAdminRoute && currentTab === 'terms' && <TermsOfService />}
+        {!isAdminRoute && currentTab === 'datarights' && <DataRightsForm />}
       </main>
+      <ConsentBanner />
     </div>
   );
 }

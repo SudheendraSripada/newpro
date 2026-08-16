@@ -8,6 +8,7 @@ const GPACalculator = () => {
         if (saved) return JSON.parse(saved);
         return [{ name: '', credits: '', grade: 'A+' }];
     });
+    const [consentGiven, setConsentGiven] = useState(false);
 
     const [branchConfig, setBranchConfig] = useState({
         branch: 'cse',
@@ -16,8 +17,10 @@ const GPACalculator = () => {
     });
 
     useEffect(() => {
-        localStorage.setItem('study_gpa_v4', JSON.stringify(gpaSubjects));
-    }, [gpaSubjects]);
+        if (consentGiven) {
+            localStorage.setItem('study_gpa_v4', JSON.stringify(gpaSubjects));
+        }
+    }, [gpaSubjects, consentGiven]);
 
     const handleLoadBranchSubjects = () => {
         const key = `${branchConfig.year}.${branchConfig.sem}`;
@@ -202,6 +205,15 @@ const GPACalculator = () => {
                     >
                         + Add Subject
                     </button>
+
+                    <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: 'var(--input-bg)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                            <input type="checkbox" checked={consentGiven} onChange={(e) => setConsentGiven(e.target.checked)} />
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                I consent to the storage and processing of my GPA data for calculation purposes. (Required to save)
+                            </span>
+                        </label>
+                    </div>
                 </div>
                 <div style={{ marginTop: '1rem', padding: '2rem', backgroundColor: 'var(--input-bg)', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--border-color)' }}>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: '0.5rem' }}>Calculated SGPA</div>
