@@ -12,11 +12,14 @@ const AttendanceTracker = () => {
         if (saved) return JSON.parse(saved);
         return [];
     });
+    const [consentGiven, setConsentGiven] = useState(false);
 
     useEffect(() => {
-        localStorage.setItem('study_attendance_config_v1', JSON.stringify(branchConfig));
-        localStorage.setItem('study_attendance_v6', JSON.stringify(attendanceData));
-    }, [branchConfig, attendanceData]);
+        if (consentGiven) {
+            localStorage.setItem('study_attendance_config_v1', JSON.stringify(branchConfig));
+            localStorage.setItem('study_attendance_v6', JSON.stringify(attendanceData));
+        }
+    }, [branchConfig, attendanceData, consentGiven]);
 
     const handleLoadSemester = () => {
         const key = `${branchConfig.year}.${branchConfig.sem}`;
@@ -155,6 +158,15 @@ const AttendanceTracker = () => {
                         })
                     )}
                     <button onClick={handleAddAttendanceRow} className="btn-secondary" style={{ border: '1px dashed var(--accent-hover)', color: 'var(--accent-hover)', background: 'transparent', alignSelf: 'flex-start', padding: '0.5rem 1rem' }}>+ Add Subject</button>
+                    
+                    <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: 'var(--input-bg)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                            <input type="checkbox" checked={consentGiven} onChange={(e) => setConsentGiven(e.target.checked)} />
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                I consent to the storage and processing of my attendance data for tracking purposes. (Required to save)
+                            </span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>

@@ -13,10 +13,13 @@ const InternalCalculator = () => {
     });
 
     const [result, setResult] = useState(null);
+    const [consentGiven, setConsentGiven] = useState(false);
 
     useEffect(() => {
-        localStorage.setItem('study_internals_v9', JSON.stringify(marks));
-    }, [marks]);
+        if (consentGiven) {
+            localStorage.setItem('study_internals_v9', JSON.stringify(marks));
+        }
+    }, [marks, consentGiven]);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -111,6 +114,15 @@ const InternalCalculator = () => {
                             <label style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>Attendance (%)</label>
                             <input type="number" id="at" placeholder="e.g. 85" max="100" step="0.1" className="input-field" value={marks.at} onChange={handleChange} required />
                         </div>
+                    </div>
+
+                    <div style={{ padding: '1rem', backgroundColor: 'var(--input-bg)', borderRadius: '8px', border: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                            <input type="checkbox" checked={consentGiven} onChange={(e) => setConsentGiven(e.target.checked)} />
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                I consent to the storage and processing of my internal marks data for calculation purposes. (Required to save)
+                            </span>
+                        </label>
                     </div>
 
                     <button type="submit" className="btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }}>
